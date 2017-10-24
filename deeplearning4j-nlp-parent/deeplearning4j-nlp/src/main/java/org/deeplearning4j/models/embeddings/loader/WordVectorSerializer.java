@@ -18,6 +18,10 @@
 
 package org.deeplearning4j.models.embeddings.loader;
 
+//import com.fasterxml.jackson.databind.DeserializationFeature;
+//import com.fasterxml.jackson.databind.MapperFeature;
+//import com.fasterxml.jackson.databind.ObjectMapper;
+//import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,6 +30,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.compress.compressors.gzip.GzipUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
+//import org.deeplearning4j.berkeley.Pair;
 import org.apache.commons.io.output.CloseShieldOutputStream;
 import org.deeplearning4j.exception.DL4JInvalidInputException;
 import org.deeplearning4j.models.embeddings.WeightLookupTable;
@@ -1361,7 +1366,7 @@ public class WordVectorSerializer {
             Line 0 - VectorsConfiguration JSON string
             Line 1 - expTable
             Line 2 - table
-        
+
             All following lines are vocab/weight lookup table saved line by line as VocabularyWord JSON representation
          */
 
@@ -1795,6 +1800,7 @@ public class WordVectorSerializer {
             float[] vector = new float[split.length - 1];
 
             for (int i = 1; i < split.length; i++) {
+                if(split[i]==null || split[i].equals("")) System.out.println("Failed to load:"+word);
                 vector[i - 1] = Float.parseFloat(split[i]);
             }
 

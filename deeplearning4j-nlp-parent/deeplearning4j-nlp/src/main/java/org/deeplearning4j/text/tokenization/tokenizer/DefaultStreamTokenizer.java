@@ -44,7 +44,7 @@ public class DefaultStreamTokenizer implements Tokenizer {
     public DefaultStreamTokenizer(InputStream is) {
         Reader r = new BufferedReader(new InputStreamReader(is));
         streamTokenizer = new StreamTokenizer(r);
-
+	    log.warn("Wrong Tokenizer used!!");
     }
 
     /**

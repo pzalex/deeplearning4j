@@ -18,9 +18,18 @@
 
 package org.deeplearning4j.text.sentenceiterator;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.collection.CollectionReader;
+import org.apache.uima.collection.CollectionReaderDescription;
+import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -46,6 +55,8 @@ import java.util.List;
 public class UimaSentenceIterator extends BaseSentenceIterator {
 
     protected volatile CollectionReader reader;
+    protected volatile CollectionReaderDescription readerDescription;
+    protected volatile Object[] readerParams;
     protected volatile Iterator<String> sentences;
     protected String path;
     private static final Logger log = LoggerFactory.getLogger(UimaSentenceIterator.class);
@@ -79,6 +90,20 @@ public class UimaSentenceIterator extends BaseSentenceIterator {
             }
         }
 
+        this.resource = resource;
+    }
+
+
+    public UimaSentenceIterator(SentencePreProcessor preProcessor,CollectionReaderDescription crd, Object[] params,UimaResource resource) {
+        super(preProcessor);
+        readerDescription = crd;
+        readerParams = params;
+
+        try {
+            this.reader = CollectionReaderFactory.createReader(crd, params);
+        } catch (ResourceInitializationException e) {
+            throw new RuntimeException(e);
+        }
         this.resource = resource;
     }
 
@@ -170,10 +195,7 @@ public class UimaSentenceIterator extends BaseSentenceIterator {
      * @throws Exception
      */
     public static SentenceIterator createWithPath(String path) throws Exception {
-        return new UimaSentenceIterator(path,
-                        new UimaResource(AnalysisEngineFactory.createEngine(AnalysisEngineFactory
-                                        .createEngineDescription(TokenizerAnnotator.getDescription(),
-                                                        SentenceAnnotator.getDescription()))));
+        return new UimaSentenceIterator(path,new UimaResource(AnalysisEngineFactory.createEngine(AnalysisEngineFactory.createEngineDescription(TokenizerAnnotator.getDescription(), SentenceAnnotator.getDescription()))));
     }
 
 
@@ -195,7 +217,15 @@ public class UimaSentenceIterator extends BaseSentenceIterator {
     @Override
     public void reset() {
         try {
-            this.reader = FilesCollectionReader.getCollectionReader(path);
+            if(path!=null) {
+                this.reader  = FilesCollectionReader.getCollectionReader(path);
+            }	
+	    else {
+                this.reader.close();
+                this.reader = CollectionReaderFactory.createReader(readerDescription, readerParams);
+            }
+        } catch (IOException ioe) {
+            throw new RuntimeException(ioe);
         } catch (ResourceInitializationException e) {
             throw new RuntimeException(e);
         }
@@ -210,14 +240,15 @@ public class UimaSentenceIterator extends BaseSentenceIterator {
         try {
             if (defaultAnalysisEngine == null)
 
-                defaultAnalysisEngine = AnalysisEngineFactory.createEngine(
-                                AnalysisEngineFactory.createEngineDescription(SentenceAnnotator.getDescription()));
+                defaultAnalysisEngine =  AnalysisEngineFactory.createEngine(AnalysisEngineFactory.createEngineDescription(
+                        SentenceAnnotator.getDescription()));
 
             return defaultAnalysisEngine;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
 
 
 
