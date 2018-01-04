@@ -49,7 +49,6 @@ public class UimaTokenizerFactory implements TokenizerFactory {
     private String token_name;
     private TokenPreProcess preProcess;
 
-//    private TokenPreProcess preProcess;
     private static final Logger log = LoggerFactory.getLogger(UimaTokenizerFactory.class);
 
     public UimaTokenizerFactory() throws ResourceInitializationException {
@@ -63,7 +62,7 @@ public class UimaTokenizerFactory implements TokenizerFactory {
     public UimaTokenizerFactory(UimaResource resource, String token_class) {
         this.uimaResource = resource;
         this.checkForLabel = true;
-                this.token_name = token_class;
+        this.token_name = token_class;
     }
 
     public UimaTokenizerFactory(AnalysisEngine tokenizer) {
@@ -91,12 +90,16 @@ public class UimaTokenizerFactory implements TokenizerFactory {
 
     @Override
     public Tokenizer create(String toTokenize) {
-        log.info("Tokenizing string");
-        if (toTokenize == null)
+        log.debug("Tokenizing string");
+        if (toTokenize == null) {
             throw new IllegalArgumentException("Unable to proceed; on sentence to tokenize");
+        }
         Tokenizer ret = null;
-        if(token_name!=null) ret = new UimaTokenizer(toTokenize, uimaResource, token_name);
-        else { ret = new UimaTokenizer(toTokenize, uimaResource, checkForLabel); }
+        if (token_name != null) {
+            ret = new UimaTokenizer(toTokenize, uimaResource, token_name);
+        } else {
+            ret = new UimaTokenizer(toTokenize, uimaResource, checkForLabel);
+        }
         ret.setTokenPreProcessor(preProcess);
         return ret;
     }
@@ -112,10 +115,11 @@ public class UimaTokenizerFactory implements TokenizerFactory {
      */
     public static AnalysisEngine defaultAnalysisEngine() {
         try {
-            if (defaultAnalysisEngine == null)
+            if (defaultAnalysisEngine == null) {
                 defaultAnalysisEngine = AnalysisEngineFactory.createEngine(
-                                AnalysisEngineFactory.createEngineDescription(SentenceAnnotator.getDescription(),
-                                                TokenizerAnnotator.getDescription()));
+                        AnalysisEngineFactory.createEngineDescription(SentenceAnnotator.getDescription(),
+                                TokenizerAnnotator.getDescription()));
+            }
 
             return defaultAnalysisEngine;
         } catch (Exception e) {
@@ -128,18 +132,19 @@ public class UimaTokenizerFactory implements TokenizerFactory {
         */
     @Override
     public Tokenizer create(InputStream toTokenize) {
-        log.info("Tokenizing InputStream");
-        if(toTokenize == null)
+        log.debug("Tokenizing InputStream");
+        if (toTokenize == null) {
             throw new IllegalArgumentException("Unable to proceed; null InputStream");
+        }
         Tokenizer ret = null;
-                if(token_name==null) {
-            //ret = new UimaTokenizer(toTokenize,uimaResource,checkForLabel);
+        if (token_name == null) {
+
             throw new UnsupportedOperationException();
-                } else {
+        } else {
             ret = new UimaTokenizer(toTokenize,uimaResource,token_name);
-                }
-                ret.setTokenPreProcessor(preProcess);
-                return ret;
+        }
+        ret.setTokenPreProcessor(preProcess);
+        return ret;
     }
 
     @Override
@@ -156,6 +161,5 @@ public class UimaTokenizerFactory implements TokenizerFactory {
     public TokenPreProcess getTokenPreProcessor() {
         return preProcess;
     }
-
 
 }

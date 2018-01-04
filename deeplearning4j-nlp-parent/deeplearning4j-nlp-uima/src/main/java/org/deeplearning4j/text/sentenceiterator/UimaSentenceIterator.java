@@ -18,19 +18,12 @@
 
 package org.deeplearning4j.text.sentenceiterator;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.collection.CollectionReaderDescription;
-import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
+import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.token.type.Sentence;
@@ -41,7 +34,7 @@ import org.deeplearning4j.text.uima.UimaResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -70,17 +63,13 @@ public class UimaSentenceIterator extends BaseSentenceIterator {
         File f = new File(path);
         if (f.isFile()) {
 
-            //more than a kilobyte break up the file (only do this for files
-
+            //more than a kilobyte break up the file (only for files)
 
             try {
-
                 this.reader = FilesCollectionReader.getCollectionReader(path);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-
-
 
         } else {
             try {
@@ -133,16 +122,12 @@ public class UimaSentenceIterator extends BaseSentenceIterator {
                         return "";
                     }
 
-
                     resource.getAnalysisEngine().process(cas);
-
-
 
                     List<String> list = new ArrayList<>();
                     for (Sentence sentence : JCasUtil.select(cas.getJCas(), Sentence.class)) {
                         list.add(sentence.getCoveredText());
                     }
-
 
                     sentences = list.iterator();
                     //needs to be next cas
@@ -160,7 +145,6 @@ public class UimaSentenceIterator extends BaseSentenceIterator {
                             return null;
                     }
 
-
                     String ret = sentences.next();
                     if (this.getPreProcessor() != null)
                         ret = this.getPreProcessor().preProcess(ret);
@@ -175,8 +159,9 @@ public class UimaSentenceIterator extends BaseSentenceIterator {
 
         } else {
             String ret = sentences.next();
-            if (this.getPreProcessor() != null)
+            if (this.getPreProcessor() != null) {
                 ret = this.getPreProcessor().preProcess(ret);
+            }
             return ret;
         }
 
@@ -217,10 +202,10 @@ public class UimaSentenceIterator extends BaseSentenceIterator {
     @Override
     public void reset() {
         try {
-            if(path!=null) {
+            if (path != null) {
                 this.reader  = FilesCollectionReader.getCollectionReader(path);
-            }	
-	    else {
+            }
+        else {
                 this.reader.close();
                 this.reader = CollectionReaderFactory.createReader(readerDescription, readerParams);
             }
@@ -238,18 +223,15 @@ public class UimaSentenceIterator extends BaseSentenceIterator {
      */
     public static AnalysisEngine segmenter() {
         try {
-            if (defaultAnalysisEngine == null)
-
-                defaultAnalysisEngine =  AnalysisEngineFactory.createEngine(AnalysisEngineFactory.createEngineDescription(
+            if (defaultAnalysisEngine == null) {
+                defaultAnalysisEngine = AnalysisEngineFactory.createEngine(AnalysisEngineFactory.createEngineDescription(
                         SentenceAnnotator.getDescription()));
+            }
 
             return defaultAnalysisEngine;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-
-
-
 
 }

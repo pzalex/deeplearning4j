@@ -18,10 +18,6 @@
 
 package org.deeplearning4j.models.embeddings.loader;
 
-//import com.fasterxml.jackson.databind.DeserializationFeature;
-//import com.fasterxml.jackson.databind.MapperFeature;
-//import com.fasterxml.jackson.databind.ObjectMapper;
-//import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,7 +26,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.compress.compressors.gzip.GzipUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
-//import org.deeplearning4j.berkeley.Pair;
+
 import org.apache.commons.io.output.CloseShieldOutputStream;
 import org.deeplearning4j.exception.DL4JInvalidInputException;
 import org.deeplearning4j.models.embeddings.WeightLookupTable;
@@ -1800,7 +1796,13 @@ public class WordVectorSerializer {
             float[] vector = new float[split.length - 1];
 
             for (int i = 1; i < split.length; i++) {
-                if(split[i]==null || split[i].equals("")) System.out.println("Failed to load:"+word);
+                if (split[i] == null || split[i].equals("")) {
+<<<<<<< HEAD
+                    log.warn("Failed to load:" + word);
+=======
+                    log.debug("Failed to load:" + word);
+>>>>>>> 0182a0b... Uimafix formatting and logging. DL4j fails to build with IntelliJ org.apache.spark.TaskContextHelper fails to import in SparkADSI.java
+                }
                 vector[i - 1] = Float.parseFloat(split[i]);
             }
 

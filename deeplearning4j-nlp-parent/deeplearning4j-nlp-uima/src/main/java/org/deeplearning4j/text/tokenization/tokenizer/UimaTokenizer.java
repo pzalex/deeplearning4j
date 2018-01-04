@@ -45,7 +45,7 @@ public class UimaTokenizer implements Tokenizer {
     private TokenPreProcess preProcess;
     private Class tokenClass;
 
-	 /** 
+     /**
      * Tokenizes using org.cleartk.token.type.Token
      */
     public UimaTokenizer(String tokens, UimaResource resource, boolean checkForLabel) {
@@ -67,9 +67,9 @@ public class UimaTokenizer implements Tokenizer {
                     else
                         this.tokens.add(t.getCoveredText());
             }
-           resource.release(cas);
+            resource.release(cas);
         } catch (Exception e) {
-           e.printStackTrace();
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
@@ -80,18 +80,20 @@ public class UimaTokenizer implements Tokenizer {
     public UimaTokenizer(String tokentext,UimaResource resource,String token_classname) {
     
         this.tokens = new ArrayList<>();
-	log.info("Called UIMA String Tokenzier constructor to get tokens of type "+token_classname);
+        log.debug("Called UIMA String Tokenzier constructor to get tokens of type " + token_classname);
         try {
             tokenClass = Class.forName(token_classname);
             CAS cas = resource.process(tokentext);
-            for(Object some_token : JCasUtil.select(cas.getJCas(), tokenClass)) {
+            for (Object some_token : JCasUtil.select(cas.getJCas(), tokenClass)) {
                     Annotation atoken = (Annotation) some_token;
                     this.tokens.add(atoken.getCoveredText());
             }
-            if(this.tokens.size()==0) log.warn("Failed to get any "+token_classname+" tokens.");
-           resource.release(cas);
+            if (this.tokens.size() == 0) {
+                log.warn("Failed to get any " + token_classname + " tokens.");
+            }
+            resource.release(cas);
         } catch (Exception e) {
-        	e.printStackTrace();
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
@@ -104,18 +106,20 @@ public class UimaTokenizer implements Tokenizer {
     
         this.checkForLabel = checkForLabel;
         this.tokens = new ArrayList<>();
-	log.info("Called correct uimatokenizer constructor to get "+token_classname);
+        log.debug("Called correct uimatokenizer constructor to get " + token_classname);
         try {
             tokenClass = Class.forName(token_classname);
             CAS cas = resource.process(tokenstream);
-            for(Object some_token : JCasUtil.select(cas.getJCas(), tokenClass)) {
-                    Annotation atoken = (Annotation) some_token;
-                    this.tokens.add(atoken.getCoveredText());
+            for (Object some_token : JCasUtil.select(cas.getJCas(), tokenClass)) {
+                Annotation atoken = (Annotation) some_token;
+                this.tokens.add(atoken.getCoveredText());
             }
-            if(this.tokens.size()==0) log.warn("Failed to get any "+token_classname+" tokens.");
-           resource.release(cas);
+            if (this.tokens.size() == 0) {
+                log.warn("Failed to get any " + token_classname + " tokens.");
+            }
+            resource.release(cas);
         } catch (Exception e) {
-        	e.printStackTrace();
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
@@ -141,9 +145,10 @@ public class UimaTokenizer implements Tokenizer {
     public String nextToken() {
         String ret = tokens.get(index);
         index++;
-        if (preProcess != null)
+        if (preProcess != null) {
             ret = preProcess.preProcess(ret);
-        log.info("UimaTokenizer:nextToken() of:"+ret);
+        }
+        log.debug("UimaTokenizer:nextToken() of:" + ret);
         return ret;
     }
 

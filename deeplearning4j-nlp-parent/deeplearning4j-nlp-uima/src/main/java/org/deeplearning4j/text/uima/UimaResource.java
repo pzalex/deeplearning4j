@@ -81,8 +81,9 @@ public class UimaResource {
      */
     public CAS process(String text) {
         CAS cas = retrieve();
-        if (cas == null)
+        if (cas == null) {
             return null;
+        }
 
         cas.setDocumentText(text);
         try {
@@ -102,11 +103,13 @@ public class UimaResource {
      */
     public  CAS process(InputStream textstream) {
         CAS cas = retrieve();
-        if(cas == null) return null;
-                String text = null;
+        if (cas == null) {
+            return null;
+        }
+            String text = null;
         try {
-                        text = IOUtils.toString(textstream,"UTF-8");
-                cas.setDocumentText(text);
+            text = IOUtils.toString(textstream,"UTF-8");
+            cas.setDocumentText(text);
             analysisEngine.process(cas);
         } catch (AnalysisEngineProcessException e) {
             log.warn("Unable to process text " + text,e);
@@ -132,7 +135,6 @@ public class UimaResource {
     public void release(CAS cas) {
         casPool.releaseCas(cas);
     }
-
 
 
 }
